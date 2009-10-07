@@ -2,15 +2,11 @@ require File.dirname(__FILE__) + '/../../../spec_helper'
 
 describe Radiant::AdminUI::NavTab do
   before :each do
-    @tab = Radiant::AdminUI::NavTab.new(:content, "Content")
+    @tab = Radiant::AdminUI::NavTab.new("Content")
   end
 
   it "should have a name" do
-    @tab.name.should == :content
-  end
-
-  it "should have a proper name" do
-    @tab.proper_name.should == "Content"
+    @tab.name.should == "Content"
   end
 
   it "should be Enumerable" do
@@ -19,10 +15,10 @@ describe Radiant::AdminUI::NavTab do
   end
 
   it "should find contained items by name" do
-    subtab = Radiant::AdminUI::NavTab.new(:pages, "Pages")
+    subtab = Radiant::AdminUI::NavTab.new("The Pages")
     @tab << subtab
-    @tab[:pages].should == subtab
-    @tab['pages'].should == subtab
+    @tab[:the_pages].should == subtab
+    @tab['the pages'].should == subtab
   end
 
   it "should assign the tab on the sub-item when adding" do
@@ -64,22 +60,8 @@ describe Radiant::AdminUI::NavTab do
   describe "visibility" do
     dataset :users
     
-    it "should be visible by default" do
-      User.all.each {|user| @tab.should be_visible(user) }
-    end
-    
-    it "should restrict to a specific role" do
-      @tab.visibility.replace [:designer]
-      @tab.should be_visible(users(:designer))
-      @tab.should_not be_visible(users(:admin))
-      @tab.should_not be_visible(users(:existing))
-    end
-    
-    it "should restrict to a group of roles" do
-      @tab.visibility.replace [:designer, :admin]
-      @tab.should be_visible(users(:designer))
-      @tab.should be_visible(users(:admin))
-      @tab.should_not be_visible(users(:existing))
+    it "should not be visible by default" do
+      User.all.each {|user| @tab.should_not be_visible(user) }
     end
   end
   
@@ -93,7 +75,7 @@ end
 
 describe Radiant::AdminUI::NavSubItem do
   before :each do
-    @tab = Radiant::AdminUI::NavTab.new(:content, "Content")
+    @tab = Radiant::AdminUI::NavTab.new("Content")
     @subitem = Radiant::AdminUI::NavSubItem.new(:pages, "Pages", "/admin/pages")
     @tab << @subitem
   end
@@ -140,12 +122,6 @@ describe Radiant::AdminUI::NavSubItem do
     
     it "should check the visibility against the controller permissions" do
       User.all.each {|user| @subitem.should be_visible(user) }
-    end
-    
-    it "should not be visible when the parent tab is not visible to the user" do
-      @tab.visibility.replace [:admin]
-      @subitem.should_not be_visible(users(:designer))
-      @subitem.should_not be_visible(users(:existing))
     end
     
     describe "when the controller limits access to the action" do

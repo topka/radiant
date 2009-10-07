@@ -38,6 +38,13 @@ module Radiant
     def admin
       AdminUI.instance
     end
+    
+    def tab(name, &block)
+      admin.nav.each_with_index do |tab, i|
+        puts tab.inspect.to_json #if tab[0] == name
+      end
+      admin.nav[name].call(&block)
+    end
 
     # Determine if another extension is installed and up to date.
     #

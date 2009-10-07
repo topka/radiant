@@ -11,15 +11,15 @@ module Radiant
     # The NavTab Class holds the structure of a navigation tab (including
     # its sub-nav items).
     class NavTab < Array
-      attr_reader :name, :proper_name, :visibility
+      attr_reader :name
 
-      def initialize(name, proper_name, visibility = [:all])
-        @name, @proper_name, @visibility = name, proper_name, Array(visibility)
+      def initialize(name)
+        @name = name
       end
 
       def [](id)
         unless id.kind_of? Fixnum
-          self.find {|subnav_item| subnav_item.name.to_s == id.to_s }
+          self.find {|subnav_item| subnav_item.name.to_s.titleize == id.to_s.titleize }
         else
           super
         end
@@ -50,7 +50,7 @@ module Radiant
       alias :add :<<
 
       def visible?(user)
-        visibility.include?(:all) || visibility.any? {|v| user.has_role?(v) }
+        any? { |sub_item| sub_item.visible?(user) }
       end
 
       def deprecated_add(name, url, caller)
@@ -69,7 +69,7 @@ module Radiant
       end
 
       def visible?(user)
-        tab.visible?(user) && visible_by_controller?(user)
+        visible_by_controller?(user)
       end
 
       def relative_url
@@ -111,25 +111,25 @@ module Radiant
     end
 
     def initialize
-      @nav = NavTab.new(:tabs, "Tab Container")
+      @nav = NavTab.new("Tab Container")
       load_default_regions
     end
 
     def load_default_nav
-      content = nav_tab(:content, "Content")
+      content = nav_tab("Content")
       content << nav_item(:pages, "Pages", "/admin/pages")
       nav << content
 
-      design = nav_tab(:design, "Design", [:designer, :admin])
+      design = nav_tab("Design")
       design << nav_item(:layouts, "Layouts", "/admin/layouts")
       design << nav_item(:snippets, "Snippets", "/admin/snippets")
       nav << design
 
-      # media = NavTab.new(:assets, "Assets")
+      # media = NavTab.new("Assets")
       # media << NavSubItem.new(:all, "All", "/admin/assets/")
       # media << NavSubItem.new(:all, "Unattached", "/admin/assets/unattached/")
 
-      settings = nav_tab(:settings, "Settings")
+      settings = nav_tab("Settings")
       settings << nav_item(:general, "Personal", "/admin/preferences/edit")
       settings << nav_item(:users, "Users", "/admin/users")
       settings << nav_item(:extensions, "Extensions", "/admin/extensions")

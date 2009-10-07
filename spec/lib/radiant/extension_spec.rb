@@ -47,6 +47,14 @@ describe Radiant::Extension do
     end
   end
 
+  it "should allow the manipulation of tabs" do
+    SuperExtension.class_eval {
+      tab 'Design' do
+        add 'test'
+      end
+    }
+  end
+
   describe ".extension_enabled?" do
     it "should be false if extension does not exist" do
       BasicExtension.extension_enabled?(:bogus).should be_false
