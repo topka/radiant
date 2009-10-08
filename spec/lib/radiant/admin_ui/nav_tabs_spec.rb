@@ -22,16 +22,16 @@ describe Radiant::AdminUI::NavTab do
   end
 
   it "should assign the tab on the sub-item when adding" do
-    subtab = Radiant::AdminUI::NavSubItem.new(:pages, "Pages", "/admin/pages")
+    subtab = Radiant::AdminUI::NavSubItem.new("Pages", "/admin/pages")
     @tab << subtab
     subtab.tab.should == @tab
   end
 
   describe "inserting sub-items in specific places" do
     before :each do
-      @pages    = Radiant::AdminUI::NavSubItem.new(:pages,    "Pages",    "/admin/pages")
-      @snippets = Radiant::AdminUI::NavSubItem.new(:snippets, "Snippets", "/admin/snippets")
-      @comments = Radiant::AdminUI::NavSubItem.new(:comments, "Comments", "/admin/comments")
+      @pages    = Radiant::AdminUI::NavSubItem.new("Pages",    "/admin/pages")
+      @snippets = Radiant::AdminUI::NavSubItem.new("Snippets", "/admin/snippets")
+      @comments = Radiant::AdminUI::NavSubItem.new("Comments", "/admin/comments")
       @tab << @pages
       @tab << @snippets
     end
@@ -67,8 +67,8 @@ describe Radiant::AdminUI::NavTab do
   
   it "should warn about using the deprecated add method" do
     ActiveSupport::Deprecation.should_receive(:warn)
-    @tab.add("Pages", "/admin/pages")
-    @tab[:pages].proper_name.should == "Pages"
+    @tab.add(:pages, "Pages", "/admin/pages")
+    @tab[:pages].name.should == "Pages"
     @tab[:pages].url.should == "/admin/pages"
   end
 end
@@ -76,16 +76,12 @@ end
 describe Radiant::AdminUI::NavSubItem do
   before :each do
     @tab = Radiant::AdminUI::NavTab.new("Content")
-    @subitem = Radiant::AdminUI::NavSubItem.new(:pages, "Pages", "/admin/pages")
+    @subitem = Radiant::AdminUI::NavSubItem.new("Pages", "/admin/pages")
     @tab << @subitem
   end
 
   it "should have a name" do
-    @subitem.name.should == :pages
-  end
-
-  it "should have a proper name" do
-    @subitem.proper_name.should == "Pages"
+    @subitem.name.should == "Pages"
   end
 
   it "should have a URL" do
