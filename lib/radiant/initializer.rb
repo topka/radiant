@@ -43,6 +43,8 @@ module Radiant
     def admin
       AdminUI.instance
     end
+    
+
 
     # Declare another extension as a dependency. Does not allow for the
     # specification of versions.
@@ -163,6 +165,13 @@ end_error
       configuration.middleware.insert_before(
         :"ActionController::ParamsParser",
         Rails::Rack::Metal, :if => Rails::Rack::Metal.metals.any?)
+    end
+    
+    def initialize_i18n
+      extension_loader.add_locale_paths
+      radiant_locale_paths = Dir[File.join(RADIANT_ROOT, 'config', 'locales', '*.{rb,yml}')]
+      extension_loader.configuration.i18n.load_path = radiant_locale_paths + extension_loader.configuration.i18n.load_path
+      super
     end
 
     def add_plugin_load_paths
